@@ -1,5 +1,8 @@
 FROM runpod/worker-comfyui:5.8.5-base
 
+# Install system utilities
+RUN apt-get update && apt-get install -y --no-install-recommends tree && rm -rf /var/lib/apt/lists/*
+
 # Prevent custom nodes from auto-downloading models during build
 RUN touch /comfyui/custom_nodes/skip_download_model
 

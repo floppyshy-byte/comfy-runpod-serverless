@@ -19,5 +19,8 @@ fi
 echo "[pre-start] Linking cached models into ComfyUI model paths..."
 python3 /comfy_worker/setup_models.py
 
+echo "[pre-start] Current ComfyUI model directory structure:"
+tree /comfyui/models
+
 echo "[pre-start] Starting ComfyUI via /start.sh..."
 exec /start.sh
