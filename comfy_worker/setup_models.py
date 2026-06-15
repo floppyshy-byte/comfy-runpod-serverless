@@ -151,6 +151,10 @@ def setup_models(target_base: Path = TARGET_BASE) -> int:
         log("Continuing without linking models...")
         return 0
 
+    if (cache_dir / "split_files").is_dir():
+        log("Found 'split_files' subdirectory at cache root. Mirroring from split_files.")
+        cache_dir = cache_dir / "split_files"
+
     log(f"Mirroring {cache_dir} -> {target_base}")
     mirror_tree(cache_dir, target_base)
     cleanup_broken_links(target_base)
