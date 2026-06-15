@@ -1,11 +1,17 @@
 """ComfyUI node that decrypts an image payload, then loads it from URL or base64."""
 
-# Reuse the worker's crypto helper when running inside the container.
 try:
     from comfy_worker.crypto import ENCRYPTION_KEY, aes_decrypt
 except Exception:
-    ENCRYPTION_KEY = None
-    aes_decrypt = None
+    import sys
+    import os
+    if os.path.exists("/comfy_worker") and "/" not in sys.path:
+        sys.path.append("/")
+    try:
+        from comfy_worker.crypto import ENCRYPTION_KEY, aes_decrypt
+    except Exception:
+        ENCRYPTION_KEY = None
+        aes_decrypt = None
 
 from .load_image_base64 import LoadImageBase64
 from .load_image_url import LoadImageUrl
