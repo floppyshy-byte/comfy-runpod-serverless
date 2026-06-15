@@ -51,19 +51,41 @@ def resolve_cache_dir() -> Path | None:
     org = env.hf_org
     repo = env.hf_repo
     if not org or not repo:
+        log("HF_ORG or HF_REPO environment variables not set.")
         return None
 
     repo_id = f"{org}/{repo}"
-    repo_dir = HF_CACHE / f"models--{repo_id.replace('/', '--')}"
-    ref_file = repo_dir / "refs" / "main"
-    if not ref_file.exists():
-        return None
+    searched_paths = []
 
-    snapshot = ref_file.read_text().strip()
-    snapshot_dir = repo_dir / "snapshots" / snapshot
-    if snapshot_dir.is_dir():
-        return snapshot_dir
+    # Check both models and datasets repository types
+    for prefix in ["models", "datasets"]:
+        repo_dir = HF_CACHE / f"{prefix}--{repo_id.replace('/', '--')}"
+        searched_paths.append(str(repo_dir))
+        
+        if not repo_dir.exists():
+            continue
 
+        snapshots_dir = repo_dir / "snapshots"
+        if not snapshots_dir.is_dir():
+            continue
+
+        # Check if refs/main exists to point to the main branch
+        ref_file = repo_dir / "refs" / "main"
+        if ref_file.exists():
+            snapshot_hash = ref_file.read_text().strip()
+            snapshot_dir = snapshots_dir / snapshot_hash
+            if snapshot_dir.is_dir():
+                log(f"Resolved HF cache via refs/main: {snapshot_dir}")
+                return snapshot_dir
+
+        # Fallback: scan snapshots folder and use the most recent directory
+        snapshots = [p for p in snapshots_dir.iterdir() if p.is_dir()]
+        if snapshots:
+            snapshots.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+            log(f"Resolved HF cache via snapshot folder scanning: {snapshots[0]}")
+            return snapshots[0]
+
+    log(f"Could not find HF cache for {repo_id}. Searched directories: {searched_paths}")
     return None
 
 
