@@ -142,14 +142,10 @@ def setup_models(target_base: Path = TARGET_BASE) -> int:
     """Link cached models into target_base and clean stale symlinks."""
     cache_dir = resolve_cache_dir()
     if cache_dir is None:
-        log("WARNING: HF_ORG and HF_REPO not set and no HF cache found")
-        log("Continuing without linking models...")
-        return 0
+        raise ValueError("HF_ORG and HF_REPO environment variables must be set to resolve the HF model cache.")
 
     if not cache_dir.is_dir():
-        log(f"WARNING: cache directory does not exist: {cache_dir}")
-        log("Continuing without linking models...")
-        return 0
+        raise FileNotFoundError(f"Cache directory does not exist: {cache_dir}")
 
     log(f"Mirroring {cache_dir} -> {target_base}")
     mirror_tree(cache_dir, target_base)
