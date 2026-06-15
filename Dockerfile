@@ -39,13 +39,36 @@ RUN cd /comfyui/custom_nodes && \
      cd ComfyUI-KJNodes && \
      pip install -r requirements.txt -q
 
+# Efficiency nodes (provides LoRA Stacker node)
 RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/jags111/efficiency-nodes-comfyui && \
-    cd efficiency-nodes-comfyui && \
-    pip install -r requirements.txt -q
+     git clone https://github.com/jags111/efficiency-nodes-comfyui && \
+     cd efficiency-nodes-comfyui && \
+     pip install -r requirements.txt -q
+
+# rgthree
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/rgthree/rgthree-comfy && \
+     cd rgthree-comfy && \
+     pip install -r requirements.txt -q
+
+# ── LIGHTWEIGHT CUSTOM NODES (no pip installs) ──────────────────────────────
+# Fix numpy conflict + add matplotlib for Comfyroll
+RUN pip install -q "numpy>=2.0.0" matplotlib
 
 RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes
+     git clone https://github.com/ssitu/ComfyUI_UltimateSDUpscale --recursive
+
+# Comfyroll (provides CR VAE Decode, CR SDXL Aspect Ratio, CR Apply LoRA Stack)
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes
+
+# SaveImageWithMetaData
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/nkchocoai/ComfyUI-SaveImageWithMetaData
+
+# ComfyUI-Custom-Scripts
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts
 
 # Local custom nodes
 COPY comfyui_custom_nodes /comfyui/custom_nodes/comfyui_custom_nodes
