@@ -15,15 +15,29 @@ RUN cd /comfyui/custom_nodes && \
     pip install -r requirements.txt -q
 
 # Shared nodes required by prompt-studio / ModelRouter workflows
+# Impact Pack + Subpack (large, has install.py)
 RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack && \
-    cd ComfyUI-Impact-Pack && \
-    pip install -r requirements.txt -q
+     git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack && \
+     cd ComfyUI-Impact-Pack && \
+     pip install -r requirements.txt -q && \
+     python install.py
 
 RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/ltdrdata/ComfyUI-Inspire-Pack && \
-    cd ComfyUI-Inspire-Pack && \
-    pip install -r requirements.txt -q
+     git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack && \
+     cd ComfyUI-Impact-Subpack && \
+     pip install -r requirements.txt -q
+
+# Inspire Pack (provides KSampler //Inspire)
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/ltdrdata/ComfyUI-Inspire-Pack && \
+     cd ComfyUI-Inspire-Pack && \
+     pip install -r requirements.txt -q
+
+# KJNodes (provides ImagePreviewFromLatent+)
+RUN cd /comfyui/custom_nodes && \
+     git clone https://github.com/kijai/ComfyUI-KJNodes && \
+     cd ComfyUI-KJNodes && \
+     pip install -r requirements.txt -q
 
 RUN cd /comfyui/custom_nodes && \
     git clone https://github.com/jags111/efficiency-nodes-comfyui && \
