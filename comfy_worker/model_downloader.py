@@ -4,7 +4,7 @@ Downloads per-workflow LoRAs into the ComfyUI LoRA directory, skipping any
 file that already exists (e.g. pre-cached by RunPod's HuggingFace integration).
 """
 
-import subprocess
+import urllib.request
 from pathlib import Path
 
 from .env import env
@@ -41,30 +41,29 @@ def download_lora(lora_name: str, lora_url: str) -> None:
     loras_dir.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".tmp")
 
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; RunPod-ComfyUI-Worker/1.0)"
+    }
+
+    civitai_key = env.civitai_api_key
+    if civitai_key and "civitai" in lora_url:
+        headers["Authorization"] = f"Bearer {civitai_key}"
+
+    github_key = env.github_token
+    if github_key and "github.com" in lora_url:
+        headers["Authorization"] = f"token {github_key}"
+
+    req = urllib.request.Request(lora_url, headers=headers)
+
     try:
-        cmd = [
-            "curl",
-            "-L",
-            "-s",
-            "-f",
-            "--connect-timeout",
-            "10",
-            "--max-time",
-            "300",
-            "-o",
-            str(tmp),
-            lora_url,
-        ]
-
-        civitai_key = env.civitai_api_key
-        if civitai_key and "civitai" in lora_url:
-            cmd += ["-H", f"Authorization: Bearer {civitai_key}"]
-
-        github_key = env.github_token
-        if github_key and "github.com" in lora_url:
-            cmd += ["-H", f"Authorization: token {github_key}"]
-
-        subprocess.check_call(cmd)
+        # Fetch model data in chunks (1MB) to handle large files efficiently
+        with urllib.request.urlopen(req, timeout=300) as response:
+            with open(tmp, "wb") as f:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    f.write(chunk)
         tmp.replace(dest)
         print(f"[handler] LoRA ready: {lora_name}")
     except Exception as exc:
