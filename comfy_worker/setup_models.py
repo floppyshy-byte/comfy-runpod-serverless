@@ -19,7 +19,12 @@ cached models in the standard locations without copying them.
 import os
 from pathlib import Path
 
-from .env import env
+import sys
+if __name__ == "__main__" and not __package__:
+    # Allow running setup_models.py directly as a script
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from comfy_worker.env import env
 
 TARGET_BASE = env.target_base
 HF_CACHE = Path("/runpod-volume/huggingface-cache/hub")
