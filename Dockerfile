@@ -16,6 +16,11 @@ RUN cd /comfyui/custom_nodes && \
 
 # Shared nodes required by prompt-studio / ModelRouter workflows
 RUN cd /comfyui/custom_nodes && \
+    git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack && \
+    cd ComfyUI-Impact-Pack && \
+    pip install -r requirements.txt -q
+
+RUN cd /comfyui/custom_nodes && \
     git clone https://github.com/ltdrdata/ComfyUI-Inspire-Pack && \
     cd ComfyUI-Inspire-Pack && \
     pip install -r requirements.txt -q
