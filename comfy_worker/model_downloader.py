@@ -37,6 +37,10 @@ def download_lora(lora_name: str, lora_url: str) -> None:
         print(f"[handler] LoRA already present, skipping: {lora_name}")
         return
 
+    civitai_key = env.civitai_api_key
+    if "civitai.com" in lora_url and not civitai_key:
+        raise ValueError(f"CIVITAI_API_KEY environment variable must be set to download LoRA '{lora_name}' from Civitai.")
+
     print(f"[handler] Downloading LoRA: {lora_name} from {lora_url}")
     loras_dir.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".tmp")
@@ -45,7 +49,6 @@ def download_lora(lora_name: str, lora_url: str) -> None:
         "User-Agent": "Mozilla/5.0 (compatible; RunPod-ComfyUI-Worker/1.0)"
     }
 
-    civitai_key = env.civitai_api_key
     if civitai_key and "civitai" in lora_url:
         headers["Authorization"] = f"Bearer {civitai_key}"
 
