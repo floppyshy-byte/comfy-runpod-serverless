@@ -2,7 +2,7 @@
 FROM runpod/worker-comfyui:5.8.5-base
 
 # Install system utilities
-RUN apt-get update && apt-get install -y --no-install-recommends tree && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends tree libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
 # Prevent custom nodes from auto-downloading models during build
 RUN touch /comfyui/custom_nodes/skip_download_model
@@ -20,8 +20,7 @@ RUN cd /comfyui/custom_nodes && \
 RUN cd /comfyui/custom_nodes && \
      git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack && \
      cd ComfyUI-Impact-Pack && \
-     pip install -r requirements.txt -q && \
-     python install.py
+     pip install -r requirements.txt -q
 
 RUN cd /comfyui/custom_nodes && \
      git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack && \
